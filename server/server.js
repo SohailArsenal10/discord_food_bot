@@ -25,43 +25,37 @@ const getFoodOptions = (options,message) => {
 
 }
 
-const getDescriptionByFood = (options,message) => { 
-    //var fooddescriptiondict = {};
+const getDescriptionByFood = (options,message) => {
     var map1 = new Map();
     var map2 = new Map();
     axios.request(options)
     .then((response) => {
       return response.data;})
     .then((responsejson)=>{
+      
       var fooddescriptionresp = responsejson.results;
-      //console.log("JSON Response is \n" + fooddescriptionresp)
       fooddescriptionresp.forEach(obj => {
-        if(obj.name.includes(options.params.q) && obj.description.length > 0)
+        if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && (obj.description.length > 0 || !!obj.description) && !obj.description.startsWith(' '))
         {
-          //fooddescriptiondict[obj.name] = obj.description;
           map1.set(obj.name,obj.description);
         }
         
       });
-      //console.log("Dictionary is \n" + fooddescriptiondict);
       map2 = Array.from(map1).slice(0,Number(options.params.size));
       console.log("Map is " + map2 + map2.size + Number(options.params.size) + "\n\n");
       map2.forEach((value, key, map) => 
       {
         console.log(`${key} ---> ${value}`);
       });
-      //if(Object.keys(fooddescriptiondict).length)
+
       if(map1.size)
       {
         if(!options.params.size)
-        //var output = Object.entries(fooddescriptiondict).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
         var output1 = Array.from(map1, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
         else
-            //var output = Object.entries(fooddescriptiondict).slice(0,Number(options.params.size)).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
             var output1 = Array.from(map2, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
                 
         console.log("\n\n\n output is \n" + output1 + "\n\n" + output1.length)
-        //console.log("\n\n\n params size is " + options.params.size)
         /*if(output1.length > 4000)
         {          
           message.reply("Please enter number option at the last which should be less than or equal to 3")
@@ -98,16 +92,15 @@ const getVideoByFood = (options,message) => {
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
+    
     var foodvideoresp = responsejson.results;
-    //console.log("JSON Response is \n" + foodvideoresp)
     foodvideoresp.forEach(obj => {
-      if(obj.name.includes(options.params.q) && !!obj.original_video_url)
+      if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && !!obj.original_video_url)
       {
         foodvideodict[obj.name] = obj.original_video_url;
       }
       
     });
-    //console.log("Dictionary is \n" + foodvideodict);
 
     if(Object.keys(foodvideodict).length)
     {
@@ -115,9 +108,7 @@ const getVideoByFood = (options,message) => {
       var output = Object.entries(foodvideodict).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
       else
       var output = Object.entries(foodvideodict).slice(0,Number(options.params.size)).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
-
-      //console.log("\n\n\n output is \n" + output + "\n\n" + output.length)
-      //console.log("\n\n\n params size is " + options.params.size)     
+   
         message.reply("Click on the below links to watch the videos\n\n") 
         message.reply(output)
         .then(() => console.log(`Replied to message "${message.content}"`))
@@ -145,16 +136,15 @@ const getImageByFood = (options,message) => {
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
+    
     var foodimageresp = responsejson.results;
-    //console.log("JSON Response is \n" + foodimageresp)
     foodimageresp.forEach(obj => {
-      if(obj.name.includes(options.params.q) && !!obj.thumbnail_url)
+      if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && !!obj.thumbnail_url)
       {
         foodimagedict[obj.name] = obj.thumbnail_url;
       }
       
     });
-    //console.log("Dictionary is \n" + foodimagedict);
 
     if(Object.keys(foodimagedict).length)
     {
@@ -163,8 +153,6 @@ const getImageByFood = (options,message) => {
       else
       var output = Object.entries(foodimagedict).slice(0,Number(options.params.size)).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
 
-      //console.log("\n\n\n output is \n" + output + "\n\n" + output.length)
-      //console.log("\n\n\n params size is " + options.params.size) 
         message.reply("Click on the below links to see the images\n\n")     
         message.reply(output)
         .then(() => console.log(`Replied to message "${message.content}"`))
@@ -194,10 +182,10 @@ const getInstructionsByFood = (options,message) => {
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
+    
     var foodinstructionresp = responsejson.results;
-    //console.log("JSON Response is \n" + foodinstructionresp)
     foodinstructionresp.forEach(obj => {
-      if(obj.name.includes(options.params.q) && !!obj.instructions)
+      if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && !!obj.instructions)
       {
         map1.set(obj.name, obj.instructions.map((instruction, index) => 
         {
@@ -255,5 +243,5 @@ module.exports.getDescriptionByFood = getDescriptionByFood;
 module.exports.getVideoByFood = getVideoByFood;
 module.exports.getImageByFood = getImageByFood;
 module.exports.getInstructionsByFood = getInstructionsByFood;
-//.slice(0,Number(options.params.size))   Object.entries(map).map(([k,v]) => `${k}_${v}`);
+
 

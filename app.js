@@ -31,7 +31,7 @@ client.on('ready', () => {
 
 client.on('messageCreate', async (message) => {
   //console.log(message);
-  if (message.author.bot) return;
+  if (message.author.bot || !message.content.startsWith(PREFIX)) return;
   if (message.content.startsWith(PREFIX)) {
     const [CMD_NAME, ...args] = message.content
       .trim()
@@ -64,8 +64,7 @@ client.on('messageCreate', async (message) => {
             else if(CMD_NAME.toLowerCase() == 'getimagebyfood')
             service.getImageByFood(options,message);
             else if(CMD_NAME.toLowerCase() == 'getinstructionsbyfood')
-            service.getInstructionsByFood(options,message);
-            //console.log("query is "+options.params.q + "  "+typeof(options.params.q)) ;
+            service.getInstructionsByFood(options,message);;
           }
           break;
       }         
@@ -82,4 +81,4 @@ client.on('messageCreate', async (message) => {
 })*/
 
 client.login(process.env.TOKEN);
-//509433
+
