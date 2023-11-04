@@ -10,6 +10,7 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent
+    //GatewayIntentBits.GuildMembers,
   ]
 });
 
@@ -26,7 +27,9 @@ const options = {
 };
 
 client.on('ready', () => {
-  console.log(`${client.user.tag} has logged in.`);
+  console.log(`${client.user.tag} has logged in.\n\n`);
+  //console.log(`${client.user.presence.guild.channels.fetch()}`);
+  //console.log(`user details\n ${client.user.presence.member}`)
 });
 
 client.on('messageCreate', async (message) => {
@@ -65,6 +68,11 @@ client.on('messageCreate', async (message) => {
             service.getImageByFood(options,message);
             else if(CMD_NAME.toLowerCase() == 'getinstructionsbyfood')
             service.getInstructionsByFood(options,message);;
+          }
+          break;
+          case "help":
+          {
+            service.getHelp(message);
           }
           break;
       }         
