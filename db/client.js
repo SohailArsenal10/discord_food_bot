@@ -6,7 +6,7 @@ import { createClient } from 'redis'
         password: process.env.REDIS_PWD,
         socket: {
             host: process.env.REDIS_DB,
-            port: 12857
+            port: process.env.PORT
         }
     });
 

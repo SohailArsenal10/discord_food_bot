@@ -1,8 +1,13 @@
 
-require("dotenv").config();
-const service= require('./server/server.js');
+import express from 'express'
+import dotenv from 'dotenv';
+dotenv.config();
+//const service= require('./server/server.js');
+import * as service from './server/server.js';
+import  foodRouter from './route/foodroute.js';
 
-const {Client, GatewayIntentBits} = require('discord.js');
+//const {Client, GatewayIntentBits} = require('discord.js');
+import { Client, GatewayIntentBits } from 'discord.js';
 
 const client = new Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -13,6 +18,11 @@ const client = new Client({
     //GatewayIntentBits.GuildMembers,
   ]
 });
+
+const app = new express()
+app.use(express.json())
+
+app.use('/food', foodRouter)
 
 const PREFIX = "$";
 
@@ -25,6 +35,8 @@ const options = {
     'X-RapidAPI-Host': process.env.HOST
   }
 };
+
+//client.on("debug", console.log)
 
 client.on('ready', () => {
   console.log(`${client.user.tag} has logged in.\n\n`);
@@ -88,5 +100,8 @@ client.on('messageCreate', async (message) => {
   }
 })*/
 
-client.login(process.env.TOKEN);
+//client.login(process.env.TOKEN);
+app.listen(8080,()=> {
+  console.log("Redis server started")
+});
 

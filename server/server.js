@@ -1,11 +1,12 @@
-const axios = require("axios");
+//const axios = require("axios");
+import axios from 'axios';
 
 const help_message = `Below are the commands to use for different food results (Space to be added in between)\n 
-$getfoodoptions {food}- Gives options with respect to food mentioned by the user. Example : $getfoodoptions cookie (Gives all cookie options)\n\n
-$getdescriptionbyfood {food} {number}- Gives description with respect to food mentioned by the user. Example : $getdescriptionbyfood pancake (Gives all pancake descriptions)\n$getdescriptionbyfood pancake 3 (Gives 3 pancakes descriptions)\n\n
-$getvideobyfood {food} {number}- Gives videos with respect to food mentioned by the user. Example : $getvideobyfood chocolate (Gives all chocolate descriptions)\n$getvideobyfood pancake 5 (Gives 5 chocolate descriptions)\n\n
-$getimagebyfood {food} {number}- Gives images with respect to food mentioned by the user. Example : $getimagebyfood pasta (Gives all pasta descriptions)\n$getimagebyfood pasta 2 (Gives 2 pasta descriptions)\n\n
-$getinstructionsbyfood {food} {number}- Gives instructions with respect to food mentioned by the user. Example : $getinstructionsbyfood salad (Gives all salad descriptions)\n$getinstructionsbyfood salad 6 (Gives 6 salad descriptions)\n\n
+$getfoodoptions {food}- Gives options with respect to food mentioned by the user. \nExample :\n $getfoodoptions cookie (Gives all cookie options)\n\n
+$getdescriptionbyfood {food} {number}- Gives description with respect to food mentioned by the user. \nExample :\n $getdescriptionbyfood pancake (Gives all pancake descriptions)\n$getdescriptionbyfood pancake 3 (Gives 3 pancakes descriptions)\n\n
+$getvideobyfood {food} {number}- Gives videos with respect to food mentioned by the user. \nExample :\n $getvideobyfood chocolate (Gives all chocolate descriptions)\n$getvideobyfood pancake 5 (Gives 5 chocolate descriptions)\n\n
+$getimagebyfood {food} {number}- Gives images with respect to food mentioned by the user. \nExample :\n $getimagebyfood pasta (Gives all pasta descriptions)\n$getimagebyfood pasta 2 (Gives 2 pasta descriptions)\n\n
+$getinstructionsbyfood {food} {number}- Gives instructions with respect to food mentioned by the user. \nExample :\n $getinstructionsbyfood salad (Gives all salad descriptions)\n$getinstructionsbyfood salad 6 (Gives 6 salad descriptions)\n\n
 Sometimes you may get less than the exact number mentioned as data may not be present. Have a nice delicacy :)
 `;
 
@@ -253,11 +254,13 @@ const getHelp = (message) => {
   .catch(console.error);
 }
 
+/*
 module.exports.getFoodOptions = getFoodOptions;
 module.exports.getDescriptionByFood = getDescriptionByFood;  
 module.exports.getVideoByFood = getVideoByFood;
 module.exports.getImageByFood = getImageByFood;
 module.exports.getInstructionsByFood = getInstructionsByFood;
-module.exports.getHelp = getHelp;
+module.exports.getHelp = getHelp;*/
 
 
+export { getFoodOptions, getDescriptionByFood, getVideoByFood, getImageByFood, getInstructionsByFood, getHelp};
