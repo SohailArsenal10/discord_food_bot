@@ -50,21 +50,24 @@ let food1 = {
      option: ['banana waffle','blueberry waffle','waffles']
   }
 
-router.get('/:id', async (req, res) => {
-  /*const person = await foodRepository.fetch(req.params.id)  //Food:01HSQQE5M9X3R5KQWSKD9A9VJC
-  res.send(person)
-  console.log(req.params.id);*/
+  router.get('/', async (req, res) => {
+    res.json({
+      code:200
+    })
+  })
 
+router.get('/:id', async (req, res) => {
   const person = await foodRepository.save(food1)
   res.send(person)
   console.log(person);
 })
 
-router.get('/', async (req, res) => {
-  res.json({
-    code:200
-  })
+router.get('/option/:id', async (req, res) => {
+  const person = await foodoptionRepository.save(foodoption)
+  res.send(person)
+  console.log(person);
 })
+
 
 router.get('/search/foodRepository/:id', async (req, res) => {
   //const foodall = await foodRepository.search().return.all()
@@ -122,18 +125,16 @@ router.get('/search/foodinstRepository/:id', async (req, res) => {
   res.send(name)
 })
 
-router.get('/option/:id', async (req, res) => {
-  /*const person = await foodRepository.fetch(req.params.id)  //Food:01HSQQE5M9X3R5KQWSKD9A9VJC
-  res.send(person)
-  console.log(req.params.id);*/
 
-  const person = await foodoptionRepository.save(foodoption)
+router.post('/postfood', async (req, res) => {
+  const person = await foodRepository.save(food)  //req.body    food
   res.send(person)
   console.log(person);
 })
 
-router.post('/postfood', async (req, res) => {
-  const person = await foodRepository.save(food1)
+router.post('/postoptionfood', async (req, res) => {
+  console.log("\n\n cache update req is \n", req.body)
+  const person = await foodoptionRepository.save(req.body.option) //req.body.option   foodoption
   res.send(person)
   console.log(person);
 })

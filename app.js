@@ -36,6 +36,28 @@ const options = {
   }
 };
 
+const get_cache_header = {
+  method: 'GET',
+  url: '',
+  params: {id: ''},
+};
+
+const post_cache_header = {
+  method: 'POST',
+  url: '',
+  body: {
+    option : {
+      option : []
+    },
+    name : '',
+    description : '',
+    original_video_url : '',
+    thumbnail_url : '',
+    instructions : [],
+    display : ''
+  }
+};
+
 //client.on("debug", console.log)
 
 client.on('ready', () => {
@@ -58,8 +80,12 @@ client.on('messageCreate', async (message) => {
         case "getfoodoptions":
           {
           options.url = 'https://tasty.p.rapidapi.com/recipes/auto-complete';
-          options.params.prefix = args[0];          
-          service.getFoodOptions(options,message);
+          options.params.prefix = args[0];
+          get_cache_header.params.id = args[0];
+          get_cache_header.url = 'http://localhost:8080/food/search/foodoptionRepository/' + get_cache_header.params.id;
+          post_cache_header.url = 'http://localhost:8080/food/postoptionfood';
+
+          service.getFoodOptionsCache(options,message,get_cache_header,post_cache_header);
           //console.log(typeof(options.params.size));
           }
           break;
@@ -71,15 +97,32 @@ client.on('messageCreate', async (message) => {
             options.url = 'https://tasty.p.rapidapi.com/recipes/list';
             options.params.q = args[0];
             options.params.size = args[1];
+            get_cache_header.params.id = args[0];
+            post_cache_header.url = 'http://localhost:8080/food/postfood';
 
             if(CMD_NAME.toLowerCase() == 'getdescriptionbyfood')
-            service.getDescriptionByFood(options,message);
+            {
+              get_cache_header.url = 'http://localhost:8080/food/search/fooddescRepository/' + get_cache_header.params.id;
+              service.getDescriptionByFoodCache(options,message,get_cache_header,post_cache_header);              
+            }
+            
             else if(CMD_NAME.toLowerCase() == 'getvideobyfood')
-            service.getVideoByFood(options,message);
+            {
+              get_cache_header.url = 'http://localhost:8080/food/search/foodvideoRepository/' + get_cache_header.params.id;
+              service.getVideoByFood(options,message,get_cache_header,post_cache_header);
+            }
+            
             else if(CMD_NAME.toLowerCase() == 'getimagebyfood')
-            service.getImageByFood(options,message);
+            {
+              get_cache_header.url = 'http://localhost:8080/food/search/foodimageRepository/' + get_cache_header.params.id;
+              service.getImageByFood(options,message,get_cache_header,post_cache_header);
+            }
+            
             else if(CMD_NAME.toLowerCase() == 'getinstructionsbyfood')
-            service.getInstructionsByFood(options,message);;
+            {
+              get_cache_header.url = 'http://localhost:8080/food/search/foodinstRepository/' + get_cache_header.params.id;
+              service.getInstructionsByFood(options,message,get_cache_header,post_cache_header);
+            }           
           }
           break;
           case "help":
@@ -100,7 +143,7 @@ client.on('messageCreate', async (message) => {
   }
 })*/
 
-//client.login(process.env.TOKEN);
+client.login(process.env.TOKEN);
 app.listen(8080,()=> {
   console.log("Redis server started")
 });
