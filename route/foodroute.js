@@ -127,14 +127,15 @@ router.get('/search/foodinstRepository/:id', async (req, res) => {
 
 
 router.post('/postfood', async (req, res) => {
-  const person = await foodRepository.save(food)  //req.body    food
+  //console.log("\n\n cache update req is \n", req.body)
+  const person = await foodRepository.save(req.body.Food)
   res.send(person)
   console.log(person);
 })
 
 router.post('/postoptionfood', async (req, res) => {
-  console.log("\n\n cache update req is \n", req.body)
-  const person = await foodoptionRepository.save(req.body.option) //req.body.option   foodoption
+  //console.log("\n\n cache update req is \n", req.body)
+  const person = await foodoptionRepository.save(req.body.FoodOptions)
   res.send(person)
   console.log(person);
 })

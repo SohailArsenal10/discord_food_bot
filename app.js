@@ -46,18 +46,19 @@ const post_cache_header = {
   method: 'POST',
   url: '',
   body: {
-    option : {
+    FoodOptions : {
       option : []
     },
+    Food : {
     name : '',
     description : '',
     original_video_url : '',
     thumbnail_url : '',
-    instructions : [],
     display : ''
+    }    
   }
 };
-
+//instructions : [],
 //client.on("debug", console.log)
 
 client.on('ready', () => {

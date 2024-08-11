@@ -84,9 +84,6 @@ const saveCache = (post_cache_header) => {
 const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header) => {    
   var foodoptionsarr = [];
   
-  /*if(options_cache != null)
-    options = options_cache;*/
-  
   axios.request(get_cache_header)
   .then((response) => {
     return response.data;})
@@ -95,10 +92,6 @@ const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header)
     if(false)
     {
     var foodoptionsresp = responsejson;
-    //console.log("JSON Response is \n" +foodoptionsresp)
-    /*foodoptionsresp.forEach(obj => {
-      foodoptionsarr = obj.option;
-    });*/
     foodoptionsarr = foodoptionsresp[0].option;
     
     var output = foodoptionsarr.map( (e,i) => (i+1+"."+e) ).join('\n');
@@ -113,9 +106,11 @@ const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header)
     console.log("\n Calling api as data not found in cache\n");
     getFoodOptions(options,message).then((foodoptionsarr) =>
     {
-    post_cache_header.body.option.option = foodoptionsarr;
-    //console.log("\n post_cache_header type is \n" + Array.isArray(post_cache_header.body.option.option) + "\n\n" + typeof post_cache_header.body.option)
+    post_cache_header.body.FoodOptions.option = foodoptionsarr;
+    //console.log("\n post_cache_header type is \n" + Array.isArray(post_cache_header.body.FoodOptions.option) + "\n\n" + typeof post_cache_header.body.option)
     saveCache(post_cache_header);
+    }).catch(function (error) {
+      console.error(error);
     })
    }
 
@@ -127,47 +122,65 @@ const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header)
   });
 }
 
-const getDescriptionByFood = (options,message) => {
-  var map1 = new Map();
-  var map2 = new Map();
-  var fooddescriptionarr = [];
-  axios.request(options)
+const calculateElement = (obj, arr_j) => {
+  var temp = "";
+  switch(arr_j)
+              {
+                case 0 : temp = obj.name; break;
+                case 1 : temp = obj.description; break;
+                case 2 : temp = obj.original_video_url; break;
+                case 3 : temp = obj.thumbnail_url; break;
+                case 4 : temp = obj.display; break;
+              }
+     return temp;         
+}
+const getFood = (options,message,size,foodtype) => {
+  var map_name = new Map();
+  var map_desc = new Map();
+  var map_vid = new Map();
+  var map_thumb = new Map();
+  var map_display = new Map();
+  var fooddescriptionarrres = [];
+  var fooddescriptionarrres1 = [];
+  var arr_i = 0, arr_j = 0;
+  var map_index = 0;
+
+  fooddescriptionarrres1 = axios.request(options)
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
     
     var fooddescriptionresp = responsejson.results;
+    console.log("\n\nresp_size = \t" +  fooddescriptionresp.length)
+    //console.log("\n\nObjectresp_size = \t" + Object.keys(fooddescriptionresp).length)
     fooddescriptionresp.forEach(obj => {
       if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && (obj.description.length > 0 || !!obj.description) && !obj.description.startsWith(' '))
       {
-        map1.set(obj.name,obj.description);
-      }
-      fooddescriptionarr.push(obj); 
-    });
-    map2 = Array.from(map1).slice(0,Number(options.params.size));
-    //console.log("Map is " + map2 + map2.size + Number(options.params.size) + "\n\n");
-    /*map2.forEach((value, key, map) => 
-    {
-      console.log(`${key} ---> ${value}`);
-    });*/
-
-    if(map1.size)
-    {
-      if(!options.params.size)
-      var output1 = Array.from(map1, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
-      else
-          var output1 = Array.from(map2, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
+        map_name.set(map_index,obj.name);
+        map_desc.set(map_index,obj.description);
+        map_vid.set(map_index,obj.original_video_url);
+        map_thumb.set(map_index,obj.thumbnail_url);
+        map_display.set(map_index,obj.display);   
+        map_index++;             
               
-      console.log("\n\n\n output is \n" + output1 + "\n\n" + output1.length)
-         
-    }
-    else
+            fooddescriptionarrres[arr_i] = [];  
+                for(arr_j = 0; arr_j < size; arr_j++)
+                {                  
+                  fooddescriptionarrres[arr_i][arr_j] = calculateElement(obj,arr_j);
+                }
+                arr_i++;            
+      }
+       
+    });
+    switch(foodtype)
     {
-      message.reply("Food not found")
-      .then(() => console.log(`Replied to message "${message.content}"`))
-      .catch(console.error);  
+      case "desc" : printFood(map_desc,message,options); break;
+      case "vid" : printFood(map_vid,message,options); break;
+      case "thumb" : printFood(map_thumb,message,options); break;
+      case "display" : printFood(map_display,message,options); break;
     }
-    return fooddescriptionarr;
+    
+    return fooddescriptionarrres;
     
   }).catch(function (error) {
     console.error(error);
@@ -176,17 +189,47 @@ const getDescriptionByFood = (options,message) => {
       console.log("End of api call");
   });
 
+  return fooddescriptionarrres1;
+
+}
+
+const printFood = (map1,message,options) => {
+
+  var map2 = Array.from(map1).slice(0,Number(options.params.size));
+    if(map1.size)
+    {
+      if(!options.params.size)
+      var output = Array.from(map1, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
+      else
+          var output = Array.from(map2, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
+              
+      //console.log("\n\n\n output is \n" + output + "\n\n" + output.length)
+      /*message.reply(output)
+          .then(() => console.log(`Replied to message from api "${message.content}"`))
+          .catch(console.error);
+          //console.log("\n\nResponse is \n" +output)
+          console.log("Saving to cache....");*/
+         
+    }
+    else
+    {
+      message.reply("Food not found")
+      .then(() => console.log(`Replied to message "${message.content}"`))
+      .catch(console.error);  
+    }
 }
 
 const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_header) => {
     var map1 = new Map();
-    var map2 = new Map();    
+    var map2 = new Map();   
+    var foodobjsize = Object.keys(post_cache_header.body.Food).length; 
+  
     axios.request(get_cache_header)
     .then((response) => {
       return response.data;})
     .then((responsejson)=>{
       
-    if(responsejson)
+    if(false) //responsejson
     {
       var fooddescriptionresp = responsejson;
       fooddescriptionresp.forEach(obj => {
@@ -209,28 +252,38 @@ const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_h
         else
             var output1 = Array.from(map2, ([k,v]) => `${k}---->${v}`).join('\n\n\n');
                 
-        console.log("\n\n\n output is \n" + output1 + "\n\n" + output1.length)
+        console.log("\n\n\n output is \n", output1)//output1.length
         /*if(output1.length > 4000)
         {          
           message.reply("Please enter number option at the last which should be less than or equal to 3")
-          .then(() => console.log(`Replied to message "${message.content}"`))
+          .then(() => console.log(`Replied to message from cache "${message.content}"`))
           .catch(console.error);
         }
         else
         {
           message.reply(output1)
-          .then(() => console.log(`Replied to message "${message.content}"`))
+          .then(() => console.log(`Replied to message from cache "${message.content}"`))
           .catch(console.error);
         } */    
       }
     }
     else
     {
-      var fooddescriptionarr = getDescriptionByFood(options,message);
-      fooddescriptionarr.forEach(obj => {
-        post_cache_header.body = obj;
-        saveCache(post_cache_header);           
-      });      
+      console.log("\n Calling api as data not found in cache\n");
+      getFood(options,message,foodobjsize,"desc").then((fooddescriptionarrres) => {
+
+            fooddescriptionarrres.forEach((arr) => {
+              post_cache_header.body.Food.name = arr[0];
+              post_cache_header.body.Food.description = arr[1];
+              post_cache_header.body.Food.original_video_url = arr[2];
+              post_cache_header.body.Food.thumbnail_url = arr[3];
+              post_cache_header.body.Food.display = arr[4];
+              //console.log("\n\npost cache header = \n\n", post_cache_header.body.Food)
+              saveCache(post_cache_header);
+            })                
+      }).catch(function (error) {
+        console.error(error);
+      }) 
     }      
     }).catch(function (error) {
       console.error(error);
@@ -243,7 +296,8 @@ const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_h
 
 const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header) => { 
   var foodvideodict = {};
-  axios.request(options)
+  var foodobjsize = Object.keys(post_cache_header.body.Food).length; 
+  axios.request(get_cache_header)
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
@@ -257,7 +311,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
       
     });
 
-    if(Object.keys(foodvideodict).length)
+    if(false) //Object.keys(foodvideodict).length
     {
       if(!options.params.size)
       var output = Object.entries(foodvideodict).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
@@ -271,9 +325,21 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
     }
     else
     {
-      message.reply("Food videos not found")
-      .then(() => console.log(`Replied to message "${message.content}"`))
-      .catch(console.error);    
+      console.log("\n Calling api as data not found in cache\n");
+      getFood(options,message,foodobjsize,"vid").then((fooddescriptionarrres) => {
+
+            fooddescriptionarrres.forEach((arr) => {
+              post_cache_header.body.Food.name = arr[0];
+              post_cache_header.body.Food.description = arr[1];
+              post_cache_header.body.Food.original_video_url = arr[2];
+              post_cache_header.body.Food.thumbnail_url = arr[3];
+              post_cache_header.body.Food.display = arr[4];
+              saveCache(post_cache_header);
+            })
+                   
+      }).catch(function (error) {
+        console.error(error);
+      })    
     }
     
   }).catch(function (error) {
@@ -287,7 +353,8 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
 
 const getImageByFoodCache = (options,message,get_cache_header,post_cache_header) => { 
   var foodimagedict = {};
-  axios.request(options)
+  var foodobjsize = Object.keys(post_cache_header.body.Food).length; 
+  axios.request(get_cache_header)
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
@@ -301,7 +368,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
       
     });
 
-    if(Object.keys(foodimagedict).length)
+    if(false) //Object.keys(foodimagedict).length
     {
       if(!options.params.size)
       var output = Object.entries(foodimagedict).map(([k,v]) => `${k}--->${v}`).join('\n\n\n');
@@ -315,9 +382,21 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
     }
     else
     {
-      message.reply("Food images not found")
-      .then(() => console.log(`Replied to message "${message.content}"`))
-      .catch(console.error);    
+      console.log("\n Calling api as data not found in cache\n");
+      getFood(options,message,foodobjsize,"thumb").then((fooddescriptionarrres) => {
+
+            fooddescriptionarrres.forEach((arr) => {
+              post_cache_header.body.Food.name = arr[0];
+              post_cache_header.body.Food.description = arr[1];
+              post_cache_header.body.Food.original_video_url = arr[2];
+              post_cache_header.body.Food.thumbnail_url = arr[3];
+              post_cache_header.body.Food.display = arr[4];
+              saveCache(post_cache_header);
+            })
+                   
+      }).catch(function (error) {
+        console.error(error);
+      })     
     }
     
   }).catch(function (error) {
@@ -333,7 +412,8 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
 const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_header) => { 
   var map1 = new Map();
   var map2 = new Map();
-  axios.request(options)
+  var foodobjsize = Object.keys(post_cache_header.body.Food).length; 
+  axios.request(get_cache_header)
   .then((response) => {
     return response.data;})
   .then((responsejson)=>{
@@ -357,7 +437,7 @@ const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_
         console.log(`${key} ---> ${value}`);
       });*/
 
-    if(map1.size)
+    if(false) //map1.size
     {
       if(!options.params.size)
       var output = Array.from(map1, ([k,v]) => `${k}---->\n${v}`).join('\n\n\n');
@@ -379,9 +459,21 @@ const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_
     }
     else
     {
-      message.reply("Food images not found")
-      .then(() => console.log(`Replied to message "${message.content}"`))
-      .catch(console.error);    
+      console.log("\n Calling api as data not found in cache\n");
+      getFood(options,message,foodobjsize,"desc").then((fooddescriptionarrres) => {
+
+            fooddescriptionarrres.forEach((arr) => {
+              post_cache_header.body.Food.name = arr[0];
+              post_cache_header.body.Food.description = arr[1];
+              post_cache_header.body.Food.original_video_url = arr[2];
+              post_cache_header.body.Food.thumbnail_url = arr[3];
+              post_cache_header.body.Food.display = arr[4];
+              saveCache(post_cache_header);
+            })
+                   
+      }).catch(function (error) {
+        console.error(error);
+      })     
     }
     
   }).catch(function (error) {
