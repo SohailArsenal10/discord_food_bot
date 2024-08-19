@@ -1,5 +1,7 @@
 //const axios = require("axios");
 import axios from 'axios';
+import Enums from '../enum.js';
+
 
 const help_message = `Below are the commands to use for different food results (Space to be added in between)\n 
 $getfoodoptions {food}- Gives options with respect to food mentioned by the user. \nExample :\n $getfoodoptions cookie (Gives all cookie options)\n\n
@@ -80,11 +82,11 @@ const saveCache = (post_cache_header,foodtype) => {
     console.log("\n savecacheresponsejson = \t", responsejson);
     switch(foodtype) //Object.keys(responsejson).length
     {
-      case "name" : responsejson.option ?  console.log("Name Data saved to cache") : console.log("Empty Name data"); break;
-      case "desc" : responsejson.description ?  console.log("Description Data saved to cache") : console.log("Empty Description data"); break;
-      case "vid" : responsejson.original_video_url ?  console.log("Video Data saved to cache") : console.log("Empty Video data"); break;
-      case "thumb" : responsejson.thumbnail_url ?  console.log("Photo Thumbnail Data saved to cache") : console.log("Empty Photo Thumbnail data"); break;
-      case "display" : responsejson.display ?  console.log("Display Data saved to cache") : console.log("Empty Display data"); break;
+      case Enums.NAME : responsejson.option ?  console.log("Name Data saved to cache") : console.log("Empty Name data"); break;
+      case Enums.DESC : responsejson.description ?  console.log("Description Data saved to cache") : console.log("Empty Description data"); break;
+      case Enums.VID : responsejson.original_video_url ?  console.log("Video Data saved to cache") : console.log("Empty Video data"); break;
+      case Enums.THUMB : responsejson.thumbnail_url ?  console.log("Photo Thumbnail Data saved to cache") : console.log("Empty Photo Thumbnail data"); break;
+      case Enums.DISP : responsejson.display ?  console.log("Display Data saved to cache") : console.log("Empty Display data"); break;
     }
 
   }).catch(function (error) {
@@ -123,7 +125,7 @@ const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header)
     {
     post_cache_header.body.FoodOptions.option = foodoptionsarr;
     //console.log("\n post_cache_header type is \n" + Array.isArray(post_cache_header.body.FoodOptions.option) + "\n\n" + typeof post_cache_header.body.option)
-    saveCache(post_cache_header,"name");
+    saveCache(post_cache_header,Enums.NAME);
     }).catch(function (error) {
       console.error(error);
     })
@@ -191,10 +193,10 @@ const getFood = (options,message,size,foodtype) => {
     });
     switch(foodtype)
     {
-      case "desc" : printFood(map_desc,message,options); break;
-      case "vid" : printFood(map_vid,message,options); break;
-      case "thumb" : printFood(map_thumb,message,options); break;
-      case "display" : printFood(map_display,message,options); break;
+      case Enums.DESC : printFood(map_desc,message,options); break;
+      case Enums.VID : printFood(map_vid,message,options); break;
+      case Enums.THUMB : printFood(map_thumb,message,options); break;
+      case Enums.DISP : printFood(map_display,message,options); break;
     }
   }
     return fooddescriptionarrres;
@@ -296,7 +298,7 @@ const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_h
     else
     {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,"desc").then((fooddescriptionarrres) => {
+      getFood(options,message,foodobjsize,Enums.DESC).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -305,7 +307,7 @@ const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_h
               post_cache_header.body.Food.thumbnail_url = arr[3];
               post_cache_header.body.Food.display = arr[4];
               //console.log("\n\npost cache header = \n\n", post_cache_header.body.Food)
-              saveCache(post_cache_header,"desc");
+              saveCache(post_cache_header,Enums.DESC);
             })                
       }).catch(function (error) {
         console.error(error);
@@ -364,7 +366,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
   else
   {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,"vid").then((fooddescriptionarrres) => {
+      getFood(options,message,foodobjsize,Enums.VID).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -372,7 +374,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
               post_cache_header.body.Food.original_video_url = arr[2];
               post_cache_header.body.Food.thumbnail_url = arr[3];
               post_cache_header.body.Food.display = arr[4];
-              saveCache(post_cache_header,"vid");
+              saveCache(post_cache_header,Enums.VID);
             })
                    
       }).catch(function (error) {
@@ -433,7 +435,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
   else
   {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,"thumb").then((fooddescriptionarrres) => {
+      getFood(options,message,foodobjsize,Enums.THUMB).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -441,7 +443,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
               post_cache_header.body.Food.original_video_url = arr[2];
               post_cache_header.body.Food.thumbnail_url = arr[3];
               post_cache_header.body.Food.display = arr[4];
-              saveCache(post_cache_header,"thumb");
+              saveCache(post_cache_header,Enums.THUMB);
             })
                    
       }).catch(function (error) {
