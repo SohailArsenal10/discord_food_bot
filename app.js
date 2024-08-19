@@ -14,8 +14,9 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-    //GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences
   ]
 });
 
@@ -110,19 +111,19 @@ client.on('messageCreate', async (message) => {
             else if(CMD_NAME.toLowerCase() == 'getvideobyfood')
             {
               get_cache_header.url = 'http://localhost:8080/food/search/foodvideoRepository/' + get_cache_header.params.id;
-              service.getVideoByFood(options,message,get_cache_header,post_cache_header);
+              service.getVideoByFoodCache(options,message,get_cache_header,post_cache_header);
             }
             
             else if(CMD_NAME.toLowerCase() == 'getimagebyfood')
             {
               get_cache_header.url = 'http://localhost:8080/food/search/foodimageRepository/' + get_cache_header.params.id;
-              service.getImageByFood(options,message,get_cache_header,post_cache_header);
+              service.getImageByFoodCache(options,message,get_cache_header,post_cache_header);
             }
             
             else if(CMD_NAME.toLowerCase() == 'getinstructionsbyfood')
             {
               get_cache_header.url = 'http://localhost:8080/food/search/foodinstRepository/' + get_cache_header.params.id;
-              service.getInstructionsByFood(options,message,get_cache_header,post_cache_header);
+              service.getInstructionsByFoodCache(options,message,get_cache_header,post_cache_header);
             }           
           }
           break;
@@ -131,11 +132,28 @@ client.on('messageCreate', async (message) => {
             service.getHelp(message);
           }
           break;
+          default : message.reply("Wrong command given");
+          
       }         
   }
   else{
     message.reply("Wrong command given");
   }
+});
+
+
+client.on('guildMemberAdd', (member) => {
+  console.log(`\nguildMemberAdd: ${member}`);
+  var channelid = member.guild.channels.cache.find(channel => channel.name === "general").id
+  member.guild.channels.cache.get(channelid).send('** Welcome' + member.user.username + '**\nPlease tpe $help for bot actions');
+  //console.log('member cache',member.guild.channels.cache)
+  //member.guild.channels.cache.find(channel => console.log('\n',channel.name));
+});
+
+client.on('guildMemberRemove', (member) => {
+  console.log(`\nguildMemberRemove: ${member}`);
+  var channelid = member.guild.channels.cache.find(channel => channel.name === "general").id
+  member.guild.channels.cache.get(channelid).send('**' + member.user.username + '**, has left the server');
 });
 
 /*client.on("messageCreate", msg => {
