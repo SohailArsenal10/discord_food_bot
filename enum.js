@@ -4,6 +4,7 @@ const enums = Object.freeze({
     VID: "original_video_url",
     THUMB: "thumbnail_url",
     DISP: "display",
+    INST: "instructions",
     FOODOPT:"getfoodoptions",
     FOODDESC:"getdescriptionbyfood",
     FOODVID:"getvideobyfood",

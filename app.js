@@ -56,7 +56,8 @@ const post_cache_header = {
     description : '',
     original_video_url : '',
     thumbnail_url : '',
-    display : ''
+    display : '',
+    instructions : ''
     }    
   }
 };
@@ -103,25 +104,25 @@ client.on('messageCreate', async (message) => {
             get_cache_header.params.id = args[0];
             post_cache_header.url = 'http://localhost:8080/food/postfood';
 
-            if(CMD_NAME.toLowerCase() == 'Enums.FOODDESC')
+            if(CMD_NAME.toLowerCase() == Enums.FOODDESC)
             {
               get_cache_header.url = 'http://localhost:8080/food/search/fooddescRepository/' + get_cache_header.params.id;
               service.getDescriptionByFoodCache(options,message,get_cache_header,post_cache_header);              
             }
             
-            else if(CMD_NAME.toLowerCase() == 'Enums.FOODVID')
+            else if(CMD_NAME.toLowerCase() == Enums.FOODVID)
             {
               get_cache_header.url = 'http://localhost:8080/food/search/foodvideoRepository/' + get_cache_header.params.id;
               service.getVideoByFoodCache(options,message,get_cache_header,post_cache_header);
             }
             
-            else if(CMD_NAME.toLowerCase() == 'Enums.FOODIMG')
+            else if(CMD_NAME.toLowerCase() == Enums.FOODIMG)
             {
               get_cache_header.url = 'http://localhost:8080/food/search/foodimageRepository/' + get_cache_header.params.id;
               service.getImageByFoodCache(options,message,get_cache_header,post_cache_header);
             }
             
-            else if(CMD_NAME.toLowerCase() == 'Enums.FOODINST')
+            else if(CMD_NAME.toLowerCase() == Enums.FOODINST)
             {
               get_cache_header.url = 'http://localhost:8080/food/search/foodinstRepository/' + get_cache_header.params.id;
               service.getInstructionsByFoodCache(options,message,get_cache_header,post_cache_header);
