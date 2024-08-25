@@ -9,7 +9,8 @@ const enums = Object.freeze({
     FOODDESC:"getdescriptionbyfood",
     FOODVID:"getvideobyfood",
     FOODIMG:"getimagebyfood",
-    FOODINST:"getinstructionsbyfood"
+    FOODINST:"getinstructionsbyfood",
+    HELP:"help"
 });
 
 export default enums;

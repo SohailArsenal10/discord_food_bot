@@ -1,6 +1,7 @@
 //const axios = require("axios");
 import axios from 'axios';
 import Enums from '../enum.js';
+import * as apiserver from './apiserver.js';
 
 
 const help_message = `Below are the commands to use for different food results (Space to be added in between)\n 
@@ -30,72 +31,6 @@ axios.interceptors.response.use( x => {
       throw x;
   }
 )
-var getFoodOptions = (options,message) => {    
-      var foodoptionsarr = [];
-      var foodoptionsarr1 = [];
-      foodoptionsarr1 = axios.request(options)
-      .then((response) => {
-        return response.data;})
-      .then((responsejson)=>{
-
-        //console.log("\n foodapiresponsejson = \t", responsejson);
-     if(responsejson.results.length) // Object.keys(responsejson).length
-     {
-        var foodoptionsresp = responsejson.results;
-        foodoptionsresp.forEach(obj => {
-          foodoptionsarr.push(obj.display);
-        });
-
-        console.log("\n foodoptionsarr.length = \t", foodoptionsarr.length);
-      if(foodoptionsarr.length) //foodoptionsarr.length > 0
-      {
-          var output = foodoptionsarr.map( (e,i) => (i+1+"."+e) ).join('\n');
-        message.reply(output)
-          .then(() => console.log(`Replied to message from api "${message.content}"`))
-          .catch(console.error);
-          console.log("\n\nResponse is \n" +output)
-          console.log("Saving to cache....");
-      }       
-      else
-      {
-            message.reply("Food not found")
-            .then(() => console.log(`Replied to message "${message.content}"`))
-            .catch(console.error);
-      }
-    }
-        return foodoptionsarr;
-      }).catch(function (error) {
-        console.error(error);
-      })
-      .finally(() => {
-          console.log("End of api call");
-      });
-      return foodoptionsarr1;
-}
-
-const saveCache = (post_cache_header,foodtype) => {      
-  axios.post(post_cache_header.url,post_cache_header.body)
-  .then((response) => {
-    return response.data;})
-  .then((responsejson)=>{         
-
-    //console.log("\n savecacheresponsejson = \t", responsejson);
-    switch(foodtype) //Object.keys(responsejson).length
-    {
-      case Enums.NAME : responsejson.option ?  console.log("Name Data saved to cache") : console.log("Empty Name data"); break;
-      case Enums.DESC : responsejson.description ?  console.log("Description Data saved to cache") : console.log("Empty Description data"); break;
-      case Enums.VID : responsejson.original_video_url ?  console.log("Video Data saved to cache") : console.log("Empty Video data"); break;
-      case Enums.THUMB : responsejson.thumbnail_url ?  console.log("Photo Thumbnail Data saved to cache") : console.log("Empty Photo Thumbnail data"); break;
-      case Enums.DISP : responsejson.display ?  console.log("Display Data saved to cache") : console.log("Empty Display data"); break;
-    }
-
-  }).catch(function (error) {
-    console.error(error);
-  })
-  .finally(() => {
-      console.log("End of save to cache call ");
-  });
-}
 
 const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header) => {    
   var foodoptionsarr = [];
@@ -121,11 +56,11 @@ const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header)
   else
   {
     console.log("\n Calling api as data not found in cache\n");
-    getFoodOptions(options,message).then((foodoptionsarr) =>
+    apiserver.getFoodOptions(options,message).then((foodoptionsarr) =>
     {
     post_cache_header.body.FoodOptions.option = foodoptionsarr;
     //console.log("\n post_cache_header type is \n" + Array.isArray(post_cache_header.body.FoodOptions.option) + "\n\n" + typeof post_cache_header.body.option)
-    saveCache(post_cache_header,Enums.NAME);
+    apiserver.saveCache(post_cache_header,Enums.NAME);
     }).catch(function (error) {
       console.error(error);
     })
@@ -137,126 +72,6 @@ const getFoodOptionsCache = (options,message,get_cache_header,post_cache_header)
   .finally(() => {
       console.log("End of cache call");
   });
-}
-
-const calculateElement = (obj, arr_j,inst) => {
-  var temp = "";
-  switch(arr_j)
-              {
-                case 0 : temp = obj.name; break;
-                case 1 : temp = obj.description; break;
-                case 2 : temp = obj.original_video_url; break;
-                case 3 : temp = obj.thumbnail_url; break;
-                case 4 : temp = obj.display; break;
-                case 5 : temp = inst; break;
-              }
-     return temp;         
-}
-const getFood = (options,message,size,foodtype) => {
-  //var map_name = new Map();
-  var map_desc = new Map();
-  var map_vid = new Map();
-  var map_thumb = new Map();
-  var map_display = new Map();
-  var map_inst = new Map();
-  var inst = "";
-  var fooddescriptionarrres = [];
-  var fooddescriptionarrres1 = [];
-  var arr_i = 0, arr_j = 0;
-  //var map_index = 0;
-
-  fooddescriptionarrres1 = axios.request(options)
-  .then((response) => {
-    return response.data;})
-  .then((responsejson)=>{
-
-        //console.log("\n foodapiresponsejson = \t", responsejson);
-  if(responsejson.results.length) //Object.keys(responsejson).length
-  {
-    var fooddescriptionresp = responsejson.results;
-
-    fooddescriptionresp.forEach(obj => {
-      if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && (!!obj.description || obj.description.length > 0) && !obj.description.startsWith(' '))
-      {
-        inst = obj.instructions.map((instruction, index) => 
-          {
-            return index+1 + ". " + instruction.display_text
-          }        
-          ).join('\n');
-
-        //map_name.set(map_index,obj.name);
-        map_desc.set(obj.name,obj.description);
-        map_vid.set(obj.name,obj.original_video_url);
-        map_thumb.set(obj.name,obj.thumbnail_url);
-        map_display.set(obj.name,obj.display); 
-        map_inst.set(obj.name,inst);  
-        //map_index++;             
-              
-            fooddescriptionarrres[arr_i] = [];  
-                for(arr_j = 0; arr_j < size; arr_j++)
-                {                  
-                  fooddescriptionarrres[arr_i][arr_j] = calculateElement(obj,arr_j,inst);
-                }
-                arr_i++;            
-      }
-       
-    });
-    switch(foodtype)
-    {
-      case Enums.DESC : printFood(map_desc,message,options); break;
-      case Enums.VID : printFood(map_vid,message,options); break;
-      case Enums.THUMB : printFood(map_thumb,message,options); break;
-      case Enums.DISP : printFood(map_display,message,options); break;
-      case Enums.INST : printFood(map_inst,message,options); break;
-    }
-  }
-    return fooddescriptionarrres;
-    
-  }).catch(function (error) {
-    console.error(error);
-  })
-  .finally(() => {
-      console.log("End of api call");
-  });
-
-  return fooddescriptionarrres1;
-
-}
-
-const printFood = (map1,message,options) => {
-
-  var map2 = Array.from(map1).slice(0,Number(options.params.size));
-  console.log("\n\nSize is \n" +Number(options.params.size))
-  console.log("\n\nLimited Response is \n" ,map2)
-    if(map1.size)
-    {
-      if(!options.params.size)
-      var output = Array.from(map1, ([k,v]) => `${k}---->\n${v}`).join('\n\n\n');
-      else
-          var output = Array.from(map2, ([k,v]) => `${k}---->\n${v}`).join('\n\n\n');
-          if(output.length > 2000)
-            {          
-              message.reply("Please enter number option for your command at the last which should be less than or equal to 3\nFor more details, type $help")
-              .then(() => console.log(`Replied to message from api "${message.content}"`))
-              .catch(console.error);
-            }
-            else
-            {
-              message.reply(output)
-              .then(() => console.log(`Replied to message from api "${message.content}"`))
-              .catch(console.error);
-            }        
-
-          //console.log("\n\nResponse is \n" +output)
-          console.log("Saving to cache....");
-         
-    }
-    else
-    {
-      message.reply("Food not found")
-      .then(() => console.log(`Replied to message "${message.content}"`))
-      .catch(console.error);  
-    }
 }
 
 const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_header) => {
@@ -313,7 +128,7 @@ const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_h
     else
     {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,Enums.DESC).then((fooddescriptionarrres) => {
+      apiserver.getFood(options,message,foodobjsize,Enums.DESC).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -323,7 +138,7 @@ const getDescriptionByFoodCache = (options,message,get_cache_header,post_cache_h
               post_cache_header.body.Food.display = arr[4];
               post_cache_header.body.Food.instructions = arr[5];
               //console.log("\n\npost cache header = \n\n", post_cache_header.body.Food)
-              saveCache(post_cache_header,Enums.DESC);
+              apiserver.saveCache(post_cache_header,Enums.DESC);
             })                
       }).catch(function (error) {
         console.error(error);
@@ -348,7 +163,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
     
   if(responsejson.length) //   responsejson.length > 0 or Object.keys(responsejson).length
   {
-    var foodvideoresp = responsejson.results;
+    var foodvideoresp = responsejson;
     foodvideoresp.forEach(obj => {
       if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && !!obj.original_video_url)
       {
@@ -385,7 +200,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
   else
   {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,Enums.VID).then((fooddescriptionarrres) => {
+      apiserver.getFood(options,message,foodobjsize,Enums.VID).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -394,7 +209,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
               post_cache_header.body.Food.thumbnail_url = arr[3];
               post_cache_header.body.Food.display = arr[4];
               post_cache_header.body.Food.instructions = arr[5];
-              saveCache(post_cache_header,Enums.VID);
+              apiserver.saveCache(post_cache_header,Enums.VID);
             })
                    
       }).catch(function (error) {
@@ -421,7 +236,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
     
   if(responsejson.length) //  responsejson.length > 0 or Object.keys(responsejson).length
   {
-    var foodimageresp = responsejson.results;
+    var foodimageresp = responsejson;
     foodimageresp.forEach(obj => {
       if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && !!obj.thumbnail_url)
       {
@@ -455,7 +270,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
   else
   {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,Enums.THUMB).then((fooddescriptionarrres) => {
+      apiserver.getFood(options,message,foodobjsize,Enums.THUMB).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -464,7 +279,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
               post_cache_header.body.Food.thumbnail_url = arr[3];
               post_cache_header.body.Food.display = arr[4];
               post_cache_header.body.Food.instructions = arr[5];
-              saveCache(post_cache_header,Enums.THUMB);
+              apiserver.saveCache(post_cache_header,Enums.THUMB);
             })
                    
       }).catch(function (error) {
@@ -493,15 +308,11 @@ const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_
     
     if(responsejson.length) //map1.size
     {
-    var foodinstructionresp = responsejson.results;
+    var foodinstructionresp = responsejson;
     foodinstructionresp.forEach(obj => {
       if(obj.name.toLowerCase().includes(options.params.q.toLowerCase()) && !!obj.instructions)
       {
-        map1.set(obj.name, obj.instructions.map((instruction, index) => 
-        {
-          return index+1 + ". " + instruction.display_text
-        }        
-        ).join('\n'));       
+        map1.set(obj.name, obj.instructions);       
       }
       
     });
@@ -538,7 +349,7 @@ const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_
     else
     {
       console.log("\n Calling api as data not found in cache\n");
-      getFood(options,message,foodobjsize,Enums.INST).then((fooddescriptionarrres) => {
+      apiserver.getFood(options,message,foodobjsize,Enums.INST).then((fooddescriptionarrres) => {
 
             fooddescriptionarrres.forEach((arr) => {
               post_cache_header.body.Food.name = arr[0];
@@ -547,7 +358,7 @@ const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_
               post_cache_header.body.Food.thumbnail_url = arr[3];
               post_cache_header.body.Food.display = arr[4];
               post_cache_header.body.Food.instructions = arr[5];
-              saveCache(post_cache_header,Enums.INST);
+              apiserver.saveCache(post_cache_header,Enums.INST);
             })
                    
       }).catch(function (error) {

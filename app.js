@@ -3,7 +3,7 @@ import express from 'express'
 import dotenv from 'dotenv';
 dotenv.config();
 //const service= require('./server/server.js');
-import * as service from './server/server.js';
+import * as service from './server/cacheserver.js';
 import  foodRouter from './route/foodroute.js';
 
 //const {Client, GatewayIntentBits} = require('discord.js');
@@ -102,34 +102,35 @@ client.on('messageCreate', async (message) => {
             options.params.q = args[0];
             options.params.size = args[1];
             get_cache_header.params.id = args[0];
+            get_cache_header.url = 'http://localhost:8080/food/search/foodRepository/' + get_cache_header.params.id;
             post_cache_header.url = 'http://localhost:8080/food/postfood';
 
             if(CMD_NAME.toLowerCase() == Enums.FOODDESC)
             {
-              get_cache_header.url = 'http://localhost:8080/food/search/fooddescRepository/' + get_cache_header.params.id;
+              //get_cache_header.url = 'http://localhost:8080/food/search/fooddescRepository/' + get_cache_header.params.id;              
               service.getDescriptionByFoodCache(options,message,get_cache_header,post_cache_header);              
             }
             
             else if(CMD_NAME.toLowerCase() == Enums.FOODVID)
             {
-              get_cache_header.url = 'http://localhost:8080/food/search/foodvideoRepository/' + get_cache_header.params.id;
+              //get_cache_header.url = 'http://localhost:8080/food/search/foodvideoRepository/' + get_cache_header.params.id;
               service.getVideoByFoodCache(options,message,get_cache_header,post_cache_header);
             }
             
             else if(CMD_NAME.toLowerCase() == Enums.FOODIMG)
             {
-              get_cache_header.url = 'http://localhost:8080/food/search/foodimageRepository/' + get_cache_header.params.id;
+              //get_cache_header.url = 'http://localhost:8080/food/search/foodimageRepository/' + get_cache_header.params.id;
               service.getImageByFoodCache(options,message,get_cache_header,post_cache_header);
             }
             
             else if(CMD_NAME.toLowerCase() == Enums.FOODINST)
             {
-              get_cache_header.url = 'http://localhost:8080/food/search/foodinstRepository/' + get_cache_header.params.id;
+              //get_cache_header.url = 'http://localhost:8080/food/search/foodinstRepository/' + get_cache_header.params.id;
               service.getInstructionsByFoodCache(options,message,get_cache_header,post_cache_header);
             }           
           }
           break;
-          case "help":
+          case Enums.HELP:
           {
             service.getHelp(message);
           }
