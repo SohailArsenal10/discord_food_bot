@@ -22,7 +22,7 @@ const foodSchema = new Schema('Food', {
   description: { type: 'text'},
   original_video_url: { type: 'text'},
   thumbnail_url: { type: 'text'},
-  instructions: { type: 'string[]'},
+  instructions: { type: 'text'},
   display: { type: 'text'}
 
 })
