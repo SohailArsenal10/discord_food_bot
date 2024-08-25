@@ -1,0 +1,16 @@
+const enums = Object.freeze({
+  NAME: "name",
+  DESC: "description",
+  VID: "original_video_url",
+  THUMB: "thumbnail_url",
+  DISP: "display",
+  INST: "instructions",
+  FOODOPT: "getfoodoptions",
+  FOODDESC: "getdescriptionbyfood",
+  FOODVID: "getvideobyfood",
+  FOODIMG: "getimagebyfood",
+  FOODINST: "getinstructionsbyfood",
+  HELP: "help",
+});
+
+export default enums;
