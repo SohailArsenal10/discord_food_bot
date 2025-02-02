@@ -192,7 +192,7 @@ const getVideoByFoodCache = (options,message,get_cache_header,post_cache_header)
         {
           message.reply("Click on the below links to watch the videos\n\n") 
         message.reply(output)
-        .then(() => console.log(`Replied to message "${message.content}"`))
+        .then(() => console.log(`Replied to message from cache "${message.content}"`))
         .catch(console.error);
         }
     }           
@@ -262,7 +262,7 @@ const getImageByFoodCache = (options,message,get_cache_header,post_cache_header)
         {
           message.reply("Click on the below links to see the images\n\n")     
           message.reply(output)
-          .then(() => console.log(`Replied to message "${message.content}"`))
+          .then(() => console.log(`Replied to message from cache "${message.content}"`))
           .catch(console.error);
         }     
     }           
@@ -335,13 +335,13 @@ const getInstructionsByFoodCache = (options,message,get_cache_header,post_cache_
           if(output.length > 2000)
             {          
               message.reply("Please enter number option at the last which should be less than or equal to 3")
-              .then(() => console.log(`Replied to message "${message.content}"`))
+              .then(() => console.log(`Replied to message from cache "${message.content}"`))
               .catch(console.error);
             }
           else
             { 
               message.reply(output)
-              .then(() => console.log(`Replied to message "${message.content}"`))
+              .then(() => console.log(`Replied to message from cache "${message.content}"`))
               .catch(console.error); 
             }
       }                    
