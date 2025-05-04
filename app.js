@@ -169,6 +169,6 @@ client.on('guildMemberRemove', (member) => {
 
 client.login(process.env.TOKEN);
 app.listen(PORT,()=> {
-  console.log("Redis server started")
+  console.log("Redis express server started")
 });
 
