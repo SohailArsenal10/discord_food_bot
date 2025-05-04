@@ -6,7 +6,7 @@ import { createClient } from 'redis'
         password: process.env.REDIS_PWD,
         socket: {
             host: process.env.REDIS_DB,
-            port: process.env.PORT
+            port: process.env.REDIS_PORT
         }
     });
 
@@ -16,8 +16,6 @@ redis.on('error', (err) =>
 {
     if(err)
     console.log('Redis Client Error', err)
-    else
-    console.log('Successfully connected to Redis Client')
 });
 
 await redis.connect();
