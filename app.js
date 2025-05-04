@@ -10,6 +10,8 @@ import  foodRouter from './route/foodroute.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 import Enums from './enum.js';
 
+const PORT = process.env.PORT || 8080;
+
 const client = new Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
   intents: [
@@ -166,7 +168,7 @@ client.on('guildMemberRemove', (member) => {
 })*/
 
 client.login(process.env.TOKEN);
-app.listen(8080,()=> {
+app.listen(PORT,()=> {
   console.log("Redis server started")
 });
 
